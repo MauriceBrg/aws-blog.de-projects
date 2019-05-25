@@ -1,18 +1,33 @@
 # Maintaining multiple environments in Terraform
 
+- [Maintaining multiple environments in Terraform](#maintaining-multiple-environments-in-terraform)
+  - [Introduction](#introduction)
+  - [Background](#background)
+  - [Design Goals](#design-goals)
+  - [Solution](#solution)
+  - [switch_environment.sh](#switchenvironmentsh)
+  - [How to](#how-to)
+    - [Switching to an existing environment](#switching-to-an-existing-environment)
+    - [Running Terraform commands /using `tf`](#running-terraform-commands-using-tf)
+    - [Setting up a new environment](#setting-up-a-new-environment)
+    - [Switching to an environment with an **empty** backend storage](#switching-to-an-environment-with-an-empty-backend-storage)
+  - [Wrapping up](#wrapping-up)
+
 ## Introduction
 
-I recently started learning Terraform for some projects I'm working on. When I began doing that I was struggling with the staging-concept of Terraform. I did my research and came upon numerous [^numerous] articles and blogs that described ways to manage (multiple) environments or stages in Terraform. By the way - I'm going to use environment and stage interchangeably.
+I recently started learning Terraform for some projects I'm working on. For those who haven't encountered it: Terraform is in essence a framework by Hashicorp to describe Infrastructure as code. When I began doing that I was struggling with the staging-concept of Terraform. I did my research and came upon numerous [^numerous] articles and blogs that described ways to manage (multiple) environments or stages in Terraform[^terminology].
 
 Since there didn't seem to be a canonical way to handle multiple environments, I decided to try and figure out my own solution.
+
+(You can find the code for all of this on [Github](https://github.com/MauriceBrg/aws-blog.de-projects/tree/master/terraform_switch_environment/project))
 
 [^numerous]: Just a small sample:
     - [Deploying Multiple Environments with Terraform](https://medium.com/capital-one-tech/deploying-multiple-environments-with-terraform-kubernetes-7b7f389e622)  - Capital One on Medium
     -  [Maintaining Multiple Environments with Terraform](https://learn.hashicorp.com/terraform/operations/maintaining-multiple-environments#overview) - Tutorial on the Hashicorp site
     -  [Question about this on stackoverflow.com](https://stackoverflow.com/questions/37005303/different-environments-for-terraform-hashicorp)
+[^terminology]: By the way - I'm going to use the terms environment and stage interchangeably.
 
-
-## Some Background
+## Background
 
 **What is an environment or stage?**
 
@@ -85,6 +100,75 @@ My solution makes a few assumptions about its environment:
 
 You might already be able to spot the pattern here - every directory under the `environments` directory is an environment or stage we can deploy into. Each of them has their own set of variables (`variables.tfvars`) and backend configuration (`backend.config`). You can use those files to configure your environment-specific values.
 
+The start of the show is `switch_environment.sh` - let's look at this in more detail.
+
+## switch_environment.sh
+
+The solution consists of a simple shell-script, which does two things:
+
+1. Run `terraform init` with the appropriate backend configuration
+2. Export a function called `tf` which is something like a smart alias for `terraform` - more on that later.
+
+The script makes sure, the relevant backend configuration exists before running `terraform init` with it. It also verifies we have a `variables.tfvars` before exporting the `tf` function.
+
+```shell
+#!/usr/bin/env bash
+
+# How to: . switch_environment.sh ENVIRONMENT_NAME
+
+STAGE=$1
+
+if [[ ! -d "environments/${STAGE}" ]]; then
+    echo "The environment '${STAGE}' doesn't exist under environments/ - please check the spelling!"
+    echo "These environments are available:"
+    ls environments/
+    return 1
+fi
+
+if [[ -f environments/${STAGE}/backend.config ]]; then
+    # Configure the Backend
+    echo "Running: terraform init -backend-config=environments/${STAGE}/backend.config ."
+    terraform init -backend-config=environments/${STAGE}/backend.config .
+else
+    echo "The backend configuration is missing at environments/${STAGE}/backend.config!"
+    return 2
+fi
+
+if [[ -f "environments/${STAGE}/variables.tfvars" ]]; then
+    # Configure a function that runs terraform with the variables attached
+    # --> "tf apply" will run "terraform apply -var-file=path/to/variables.tfvars"
+    echo "The alias 'tf' runs terraform with the correct variable file when appropriate"
+    tf () {
+
+        # List of commands that can accept the -var-file argument
+        sub_commands_with_vars=(apply destroy plan)
+
+        # List of commands that accept the backend argument
+        sub_commands_with_backend=(init)
+
+        # ${@:2} means that we append all of the arguments after tf init
+
+        if [[ " ${sub_commands_with_vars[@]} " =~ " $1 " ]]; then
+            # Only some of the subcommands can work with the -var-file argument
+            echo "Running: terraform -var-file=environments/${STAGE}/variables.tfvars ${@:2}"
+            terraform -var-file=environments/${STAGE}/variables.tfvars ${@:2}
+        elif [[ " ${sub_commands_with_backend[@]} " =~ " $1 " ]]; then
+            # Only some sub commands require the backend configuration
+            echo "Running: terraform init -backend-config=environments/${STAGE}/backend.config ${@:2}"
+            terraform init -backend-config=environments/${STAGE}/backend.config ${@:2}
+        else
+            echo "Running: terraform $@"
+            terraform $@
+        fi
+
+    }
+else
+    echo "Couldn't find the variables file here: environments/${STAGE}/variables.tfvars "
+    echo "Won't set up the tf function!"
+    return 3
+fi
+```
+
 ## How to
 
 ### Switching to an existing environment
@@ -95,9 +179,9 @@ Run the following command substituting `myenvironment` with the name of the envi
 . switch_environment.sh myenvironment
 ```
 
-### Running Terraform commands
+### Running Terraform commands /using `tf`
 
-A feature of the environment switching script is, that it provides the `tf` shortcut for running `terraform` commands. This is not just an alias - it automatically adds the environments variable files to the commands that support them - here's an example:
+A feature of the environment switching script is, that it provides the `tf` shortcut for running `terraform` commands. This is not just an alias - it automatically adds the environments' variable files to the commands that support them - here's an example:
 
 ```shell
 tf apply
@@ -153,4 +237,6 @@ This basically means: *"Hey, we noticed you changed to an empty environment, wou
 
 ## Wrapping up
 
-Today I shared with you a script that might be useful if you work with multiple environments within your Terraform stack. The script is most likely not perfect - but it was good enough for my purpose. If you have ideas on how to improve it or some other kind of feedback - I'd love to hear from you. Just message me on twitter: [@Maurice_Brg](https://twitter.com/Maurice_Brg) or write me an email.
+Today I shared with you a script that might be useful if you work with multiple environments within your Terraform stack. The script is most likely not perfect - but it's currently good enough for my purpose. If you have ideas on how to improve it or some other kind of feedback - I'd love to hear from you. Just message me on twitter: [@Maurice_Brg](https://twitter.com/Maurice_Brg) or write me an email.
+
+You can find the code for all of this on [Github](https://github.com/MauriceBrg/aws-blog.de-projects/tree/master/terraform_switch_environment/project)
