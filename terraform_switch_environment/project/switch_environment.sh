@@ -36,8 +36,8 @@ if [[ -f "environments/${STAGE}/variables.tfvars" ]]; then
 
         if [[ " ${sub_commands_with_vars[@]} " =~ " $1 " ]]; then
             # Only some of the subcommands can work with the -var-file argument
-            echo "Running: terraform -var-file=environments/${STAGE}/variables.tfvars ${@:2}"
-            terraform -var-file=environments/${STAGE}/variables.tfvars ${@:2}
+            echo "Running: terraform $1 -var-file=environments/${STAGE}/variables.tfvars ${@:2}"
+            terraform $1 -var-file=environments/${STAGE}/variables.tfvars ${@:2}
         elif [[ " ${sub_commands_with_backend[@]} " =~ " $1 " ]]; then
             # Only some sub commands require the backend configuration
             echo "Running: terraform init -backend-config=environments/${STAGE}/backend.config ${@:2}"
