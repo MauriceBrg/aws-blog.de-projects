@@ -1,0 +1,131 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: sls-athena # NOTE: update this with your service name
+#app: your-app-name
+#tenant: your-tenant-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+provider:
+  name: aws
+  runtime: python3.7
+
+# you can overwrite defaults here
+#  stage: dev
+  region: eu-central-1
+
+
+  # NOTE: THESE ARE EXTREMELY BROAD PERMISSIONS, DON'T USE IN PRODUCTION!
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+        - "glue:*"
+        - "athena:*"
+        - "cloudwatch:*"
+      Resource: "*"
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+# you can add packaging information here
+package:
+#  include:
+#    - include-me.py
+#    - include-me-dir/**
+  exclude:
+#    - exclude-me.py
+  # The pre-installed boto is sufficient
+    - venv/**
+
+functions:
+  ShortRunningQuery:
+    handler: handler.short_running_query
+
+  StartLongRunningQuery:
+    handler: handler.start_long_running_query
+
+  GetLongRunningQueryStatus:
+    handler: handler.get_long_running_query_status
+
+  GetLongRunningResult:
+    handler: handler.get_long_running_result
+
+stepFunctions:
+  stateMachines:
+    long_running_query:
+      name: "Long-running-query-demo"
+      definition:
+        StartAt: start_long_running_query
+        States:
+          start_long_running_query:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [StartLongRunningQueryLambdaFunction, Arn]
+            Next: wait_five_seconds
+          wait_five_seconds:
+            Type: Wait
+            Seconds: 5
+            Next: get_query_status
+          get_query_status:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [GetLongRunningQueryStatusLambdaFunction, Arn]
+            Next: check_query_status
+          query_failed:
+            Type: Fail
+            Cause: Cause unclear, investigate the cloudwatch logs
+            Error: The query failed, check the logs.
+          check_query_status:
+            Type: Choice
+            Choices:
+              - Or:
+                  - Variable: "$.WaitTask.QueryState"
+                    StringEquals: FAILED
+                  - Variable: "$.WaitTask.QueryState"
+                    StringEquals: CANCELED
+                Next: query_failed
+              - Or:
+                  - Variable: "$.WaitTask.QueryState"
+                    StringEquals: RUNNING
+                  - Variable: "$.WaitTask.QueryState"
+                    StringEquals: QUEUED
+                Next: wait_five_seconds
+              - Variable: "$.WaitTask.QueryState"
+                StringEquals: SUCCEEDED
+                Next: process_query_result
+          process_query_result:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [GetLongRunningResultLambdaFunction, Arn]
+            End: true
+
+
+# you can add CloudFormation resource templates here
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: my-new-bucket
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"
+
+plugins:
+  - serverless-step-functions

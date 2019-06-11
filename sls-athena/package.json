@@ -1,0 +1,9 @@
+{
+  "name": "sls-athena",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {},
+  "devDependencies": {
+    "serverless-step-functions": "^1.24.0"
+  }
+}
