@@ -1,5 +1,4 @@
 import boto3
-import json
 from athena_helper import AthenaQuery
 
 BOTO_SESSION = boto3.Session()
@@ -64,7 +63,7 @@ def get_long_running_result(event, context):
 def short_running_query(event, context):
 
     # This is the default table
-    query = "select * from elb_logs limit 1"
+    query = "select elb_name from elb_logs limit 1"
     database_name = "sampledb"
 
     # Build the name of the default Athena bucket
@@ -79,4 +78,4 @@ def short_running_query(event, context):
 
     # Process the result
 
-    return event
+    return result_data

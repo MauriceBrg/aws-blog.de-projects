@@ -17,6 +17,7 @@ def set_up_logging():
     LOGGER.addHandler(output_handler)
     LOGGER.setLevel(logging.DEBUG)
 
+    # SILENCE!
     logging.getLogger('botocore').setLevel(logging.WARNING)
     logging.getLogger('urllib3').setLevel(logging.WARNING)
 
@@ -26,8 +27,6 @@ def main():
     set_up_logging()
 
     LOGGER.debug("Begin test")
-
-    logging.getLogger("athena_query").setLevel(logging.DEBUG)
 
     boto_session = boto3.Session()
 
@@ -40,14 +39,21 @@ def main():
     region = boto_session.region_name
     result_bucket = "s3://aws-athena-query-results-{}-{}/".format(account_id, region)
 
+    LOGGER.info("Creating the Athena Query Object")
     my_query = AthenaQuery(query, database_name, result_bucket)
+
+    LOGGER.info("Beginning query execution")
     query_execution_id = my_query.execute()
 
+    LOGGER.info("Retrieving query results")
     # This will automatically wait for the query to execute
     query_results = my_query.get_result()
 
+    LOGGER.info("Constructing a new AthenaQuery object from the existing execution id")
     aq = AthenaQuery.from_execution_id(query_execution_id)
-    print(aq)
+
+    LOGGER.info("Retrieving status information from the new object")
+    aq.get_status_information()
 
 
 if __name__ == "__main__":
