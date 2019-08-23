@@ -1,0 +1,157 @@
+
+service: sls-autocert
+
+custom:
+  Stage: ${opt:stage, self:provider.stage}
+
+  HostedZoneId: <update-me>
+  
+  Domain:
+    !Join
+      - "."
+      - - "*"
+        - <update-me>
+
+  pythonRequirements:
+    dockerizePip: non-linux
+    # A python lib (jsonschema) doesn't play well with Lambda --> https://github.com/Julian/jsonschema/issues/584
+    # that's why we cant use slim packages...
+    slim: false
+    layer: true
+    useDownloadCache: true
+    useStaticCache: true
+
+provider:
+  name: aws
+  runtime: python3.7
+
+# you can overwrite defaults here
+  stage: dev
+  region: eu-central-1
+
+
+# you can add packaging information here
+package:
+  include:
+#    - include-me.py
+    - src/**
+  exclude:
+    - environments/**
+    - doc/**
+    - node_modules/**
+    - venv/**
+    - wiki/**
+    - .idea/**
+    - tests/**
+    - package.json
+    - package-lock.json
+    # The false directory gets created as a result of the -no-cache flag, we don't want to include it.
+    - "false"
+    - "false/**"
+    - "*.md"
+    - azure-devops-pipeline.yml
+    - cfn-modules/**
+#    - exclude-me.py
+#    - exclude-me-dir/**
+
+functions:
+
+  CFNCustomProvider:
+    handler: src.binx_io_cfn_certificates.provider.handler
+    timeout: 300
+    layers:
+      - {Ref: PythonRequirementsLambdaLayer}
+    iamRoleStatementsName: CertProvider-${self:custom.Stage}
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - acm:RequestCertificate
+          - acm:DescribeCertificate
+          - acm:UpdateCertificateOptions
+          - acm:DeleteCertificate
+        Resource:
+          - '*'
+      - Effect: Allow
+        Action:
+          - lambda:InvokeFunction
+        Resource:
+          - !Join
+            - ""
+            - - "arn:aws:lambda:"
+              - !Ref "AWS::Region"
+              - ":"
+              - !Ref "AWS::AccountId"
+              - ":function:${self:service}-${self:custom.Stage}-CFNCustomProvider"
+
+
+# These are plain Cloudformation resources
+resources:
+  Resources:
+
+    WildcardCertificateRequest:
+      Type: Custom::Certificate
+      DependsOn: CFNCustomProviderLambdaFunction
+      Properties:
+        DomainName: ${self:custom.Domain}
+        ValidationMethod: DNS
+        ServiceToken:
+          !Join
+          - ""
+          - - "arn:aws:lambda:"
+            - !Ref "AWS::Region"
+            - ":"
+            - !Ref "AWS::AccountId"
+            - ":function:${self:service}-${self:custom.Stage}-CFNCustomProvider"
+
+
+    CertificateDNSRecord:
+      Type: Custom::CertificateDNSRecord
+      DependsOn: CFNCustomProviderLambdaFunction
+      Properties:
+        CertificateArn: !Ref WildcardCertificateRequest
+        DomainName: ${self:custom.Domain}
+        ServiceToken:
+          !Join
+          - ""
+          - - "arn:aws:lambda:"
+            - !Ref "AWS::Region"
+            - ":"
+            - !Ref "AWS::AccountId"
+            - ":function:${self:service}-${self:custom.Stage}-CFNCustomProvider"
+
+    DomainValidationRecord:
+      Type: AWS::Route53::RecordSetGroup
+      DependsOn: CFNCustomProviderLambdaFunction
+      Properties:
+        HostedZoneId: ${self:custom.HostedZoneId}
+        RecordSets:
+          - Name: !GetAtt CertificateDNSRecord.Name
+            Type: !GetAtt CertificateDNSRecord.Type
+            TTL: '60'
+            Weight: 1
+            SetIdentifier: ${self:custom.Domain}
+            ResourceRecords:
+              - !GetAtt CertificateDNSRecord.Value
+
+    WildcardCertificate:
+      Type: Custom::IssuedCertificate
+      DependsOn: CFNCustomProviderLambdaFunction
+      Properties:
+        CertificateArn: !Ref WildcardCertificateRequest
+        ServiceToken:
+          !Join
+          - ""
+          - - "arn:aws:lambda:"
+            - !Ref "AWS::Region"
+            - ":"
+            - !Ref "AWS::AccountId"
+            - ":function:${self:service}-${self:custom.Stage}-CFNCustomProvider"
+
+  Outputs:
+    CertificateArn:
+      Description: ARN of the Wildcard Certificate that has been issued by this stack.
+      Value: !Ref WildcardCertificateRequest 
+
+plugins:
+  - serverless-python-requirements
+  - serverless-iam-roles-per-function
