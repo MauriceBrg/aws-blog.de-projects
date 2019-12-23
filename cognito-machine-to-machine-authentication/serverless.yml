@@ -1,0 +1,72 @@
+
+
+service: cognito-m2m
+
+custom:
+  userPoolDomain: some-random-domain-2348472435
+  userPoolArn: <YOUR ARN HERE>
+  userPoolId: <YOUR ID HERE>
+  resourceServerIdentifier: "mydomain.com"
+  scopeName: "API_ACCESS"
+  scopeIdentifier: "${self:custom.resourceServerIdentifier}/${self:custom.scopeName}"
+
+package:
+  include:
+    - "*.py"
+    - "*.json"
+  exclude:
+    - "**"
+
+provider:
+  name: aws
+  runtime: python3.7
+
+  stage: dev
+  region: eu-central-1
+
+functions:
+  hello:
+    handler: handler.hello
+
+    events:
+      - http:
+          path: /
+          method: get
+          authorizer:
+            # Unfortunately we can't reference a user pool we create in this stack as serverelss does
+            # some black magic with the ARN to extract the name for the authorizer, which seems a little
+            # strange, but right now there's nothing we can do about that.
+            arn: ${self:custom.userPoolArn}
+            scopes:
+              - ${self:custom.scopeIdentifier}
+
+resources:
+
+  Resources:
+    
+    MachineCredentials:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: ${self:custom.userPoolId}
+        GenerateSecret: true
+        AllowedOAuthFlowsUserPoolClient: True
+        AllowedOAuthFlows:
+          - client_credentials
+        AllowedOAuthScopes:
+          - ${self:custom.scopeIdentifier}
+
+    UserPoolDomain:
+      Type: AWS::Cognito::UserPoolDomain
+      Properties: 
+        Domain: ${self:custom.userPoolDomain}
+        UserPoolId: ${self:custom.userPoolId}
+    
+    ResourceServer:
+      Type: AWS::Cognito::UserPoolResourceServer
+      Properties:
+        Identifier: ${self:custom.resourceServerIdentifier}
+        Name: "MyResourceServer"
+        Scopes:
+          - ScopeName: ${self:custom.scopeName}
+            ScopeDescription: Access to the API.
+        UserPoolId: ${self:custom.userPoolId}

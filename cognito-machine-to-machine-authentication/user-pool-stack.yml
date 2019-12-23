@@ -1,0 +1,54 @@
+Resources:
+
+  UserPool:
+    Type: AWS::Cognito::UserPool
+
+Outputs:
+
+  UserPoolId:
+    Value: !Ref UserPool
+    Description: The Id of the User Pool
+
+  UserPoolArn:
+    Value: !GetAtt UserPool.Arn
+    Description: The Arn of the User Pool
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  UserPoolArn:
+    Value: !GetAtt UserPool.Arn

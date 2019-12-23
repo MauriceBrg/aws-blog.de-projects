@@ -1,0 +1,17 @@
+{
+  "name": "cognito-m2m",
+  "version": "1.0.0",
+  "description": "```bash serverless deploy```",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serverless": "^1.60.2"
+  },
+  "devDependencies": {
+    "serverless-iam-roles-per-function": "^2.0.1"
+  }
+}
