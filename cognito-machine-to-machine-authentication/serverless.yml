@@ -33,7 +33,7 @@ functions:
           path: /
           method: get
           authorizer:
-            # Unfortunately we can't reference a user pool we create in this stack as serverelss does
+            # Unfortunately we can't reference a user pool we create in this stack as serverless does
             # some black magic with the ARN to extract the name for the authorizer, which seems a little
             # strange, but right now there's nothing we can do about that.
             arn: ${self:custom.userPoolArn}
@@ -43,17 +43,6 @@ functions:
 resources:
 
   Resources:
-    
-    MachineCredentials:
-      Type: AWS::Cognito::UserPoolClient
-      Properties:
-        UserPoolId: ${self:custom.userPoolId}
-        GenerateSecret: true
-        AllowedOAuthFlowsUserPoolClient: True
-        AllowedOAuthFlows:
-          - client_credentials
-        AllowedOAuthScopes:
-          - ${self:custom.scopeIdentifier}
 
     UserPoolDomain:
       Type: AWS::Cognito::UserPoolDomain
@@ -70,3 +59,15 @@ resources:
           - ScopeName: ${self:custom.scopeName}
             ScopeDescription: Access to the API.
         UserPoolId: ${self:custom.userPoolId}
+    
+    MachineCredentials:
+      Type: AWS::Cognito::UserPoolClient
+      Properties:
+        UserPoolId: ${self:custom.userPoolId}
+        GenerateSecret: true
+        AllowedOAuthFlowsUserPoolClient: True
+        AllowedOAuthFlows:
+          - client_credentials
+        AllowedOAuthScopes:
+          - ${self:custom.scopeIdentifier}
+
