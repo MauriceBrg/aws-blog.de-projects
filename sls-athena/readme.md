@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is the companion repository to a blog post you can find [INSERT LINK HERE]
+This is the companion repository to a blog post you can find [here](https://aws-blog.de/2019/06/automating-athena-queries-with-python.html).
 
 It includes a wrapper for calls to AWS Athena in the `athena_helper.py` which makes it a little easier to automate Athena.
 Furthermore this repository contains a [serverless](serverless.com) application that demos two use cases for the Athena Helper.
@@ -99,9 +99,13 @@ The output should look something like this:
 
 ## How to use
 
-1. Make sure you have the Serverless Framework installed and properly configured
-1. Make sure your AWS credentials are set up correctly
+1. Make sure you have the Serverless Framework installed and properly configured (`npm install -g serverless`)
+1. Make sure your AWS credentials are set up correctly ( [docs](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html))
+1. Clone the repository (`git clone git@github.com:MauriceBrg/aws-blog.de-projects.git blog-projects`)
+1. Navigate to the directory (`cd blog-projects/sls-athena`)
+1. Run `npm install` to install additional requirements ( the serverless plugins)
 1. Make sure to have used Athena at least once in your region (otherwise the S3-Bucket won't be created)
-1. Run `serverless deploy`
+   Alternatively create a bucket with the name `aws-athena-query-results-{YOUR_ACCOUNT_ID}-{YOUR_REGION}`
+1. Run `serverless deploy` (you may want to overwrite the region with the `--region` argument)
 1. Log in to your AWS Console and play
 1. When you're finished run `serverless remove` to remove the resources
