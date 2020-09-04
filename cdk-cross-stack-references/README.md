@@ -1,0 +1,1 @@
+This belongs to my [article on problems with Cross-Stack-References with CloudFormation and the CDK](https://aws-blog.de/2020/09/deployment-issues-with-cross-stack-dependencies-and-the-cdk.html).
