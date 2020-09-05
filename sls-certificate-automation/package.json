@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "serverless": "^1.50.0",
+    "serverless": "^1.82.0",
     "serverless-python-requirements": "^4.3.0"
   },
   "devDependencies": {
-    "serverless-iam-roles-per-function": "^2.0.1"
+    "serverless-iam-roles-per-function": "^2.0.2"
   }
 }
