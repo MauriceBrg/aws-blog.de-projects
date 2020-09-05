@@ -9,9 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "serverless": "^1.60.2"
+    "serverless": "^1.82.0"
   },
   "devDependencies": {
-    "serverless-iam-roles-per-function": "^2.0.1"
+    "serverless-iam-roles-per-function": "^2.0.2"
   }
 }
