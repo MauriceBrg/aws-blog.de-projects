@@ -38,6 +38,9 @@ class CdkS3EncryptionStack(core.Stack):
                 effect=iam.Effect.DENY,
                 actions=["s3:PutObject"],
                 conditions={
+                    "Null": {
+                        "s3:x-amz-server-side-encryption": "false"
+                    },
                     "StringNotEqualsIfExists": {
                         "s3:x-amz-server-side-encryption": "AES256"
                     }
@@ -61,6 +64,9 @@ class CdkS3EncryptionStack(core.Stack):
                 effect=iam.Effect.DENY,
                 actions=["s3:PutObject"],
                 conditions={
+                    "Null": {
+                        "s3:x-amz-server-side-encryption": "false"
+                    },
                     "StringNotEqualsIfExists": {
                         "s3:x-amz-server-side-encryption": "aws:kms"
                     }

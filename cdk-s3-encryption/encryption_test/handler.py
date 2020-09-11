@@ -4,6 +4,17 @@ import unittest
 import boto3
 from botocore.exceptions import ClientError
 
+def print_debug_information_and_raise(client_error: ClientError):
+
+    operation = client_error.operation_name
+    code = client_error.response['Error']['Code']
+    x_amz_request_id = client_error.response['ResponseMetadata']['HTTPHeaders']["x-amz-request-id"]
+    x_amz_id_2 = client_error.response['ResponseMetadata']['HTTPHeaders']['x-amz-id-2']
+    print(f"ClientError / Operation { operation } /  Code: { code } / x-amz-request-id: {x_amz_request_id} / x-amz-id-2: {x_amz_id_2}")
+
+    raise client_error
+
+
 class EncryptionTestCases(unittest.TestCase):
 
     def setUp(self):
@@ -16,33 +27,41 @@ class EncryptionTestCases(unittest.TestCase):
     def test_put_without_encryption_to_sse_s3_bucket_should_work(self):
         """Default encryption should take over when we specify nothing"""
 
-        sse_s3_obj = self.s3_resource.Object(
-            self.sse_s3_bucket,
-            "test/test_put_without_encryption_to_sse_s3_bucket_should_work"
-        )
-        sse_s3_obj.put(
-            Body="test_put_without_encryption_to_sse_s3_bucket_should_work"
-        )
+        try:
+            sse_s3_obj = self.s3_resource.Object(
+                self.sse_s3_bucket,
+                "test/test_put_without_encryption_to_sse_s3_bucket_should_work"
+            )
+            sse_s3_obj.put(
+                Body="test_put_without_encryption_to_sse_s3_bucket_should_work"
+            )
 
-        # Clean up after us
-        sse_s3_obj.delete()
+            # Clean up after us
+            sse_s3_obj.delete()
+
+        except ClientError as err:
+            print_debug_information_and_raise(err)
     
     def test_put_without_encryption_to_sse_kms_bucket_should_work(self):
         """Default encryption should take over when we specify nothing"""
 
-        sse_kms_obj = self.s3_resource.Object(
-            self.sse_kms_bucket,
-            "test/test_put_without_encryption_to_sse_kms_bucket_should_work"
-        )
-        sse_kms_obj.put(
-            Body="test_put_without_encryption_to_sse_kms_bucket_should_work"
-        )
+        try:
+            sse_kms_obj = self.s3_resource.Object(
+                self.sse_kms_bucket,
+                "test/test_put_without_encryption_to_sse_kms_bucket_should_work"
+            )
+            sse_kms_obj.put(
+                Body="test_put_without_encryption_to_sse_kms_bucket_should_work"
+            )
 
-        # Clean up after us
-        sse_kms_obj.delete()
+            # Clean up after us
+            sse_kms_obj.delete()
+
+        except ClientError as err:
+            print_debug_information_and_raise(err)
 
     def test_put_with_explicit_encryption_to_sse_s3_bucket_should_work(self):
-        """Default encryption should take over when we specify nothing"""
+        """Explicitly setting the correct encryption type should work"""
 
         sse_s3_obj = self.s3_resource.Object(
             self.sse_s3_bucket,
@@ -57,7 +76,7 @@ class EncryptionTestCases(unittest.TestCase):
         sse_s3_obj.delete()
 
     def test_put_with_explicit_encryption_to_sse_kms_bucket_should_work(self):
-        """Default encryption should take over when we specify nothing"""
+        """Explicitly setting the correct encryption type should work"""
 
         sse_kms_obj = self.s3_resource.Object(
             self.sse_kms_bucket,
