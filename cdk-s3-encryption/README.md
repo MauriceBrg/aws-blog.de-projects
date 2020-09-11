@@ -1,6 +1,6 @@
 # Demo on enforcing S3 encryption
 
-This belongs to our article on [enforcing encryption standards on S3 objects](/2020/09/enforcing-encryption-standards-on-s3-objects.html).
+This belongs to our article on [enforcing encryption standards on S3 objects](https://aws-blog.de/2020/09/enforcing-encryption-standards-on-s3-objects.html).
 
 ## Deployment steps
 
