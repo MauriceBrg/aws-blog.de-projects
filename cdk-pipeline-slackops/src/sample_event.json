@@ -1,0 +1,14 @@
+{
+    "region": "eu-central-1",
+    "consoleLink": "https://console.aws.amazon.com/codesuite/codepipeline/pipelines/cdk-pipeline-slackops-slackopspipeline6EAA0C21-13U0I2YGPDJJY/view?region=eu-central-1",
+    "approval": {
+        "pipelineName": "cdk-pipeline-slackops-slackopspipeline6EAA0C21-13U0I2YGPDJJY",
+        "stageName": "Approval",
+        "actionName": "approve-before-publication",
+        "token": "c6176b99-d90b-4054-b77b-96b41f36175e",
+        "expires": "2021-02-09T16:33Z",
+        "externalEntityLink": null,
+        "approvalReviewLink": "https://console.aws.amazon.com/codesuite/codepipeline/pipelines/cdk-pipeline-slackops-slackopspipeline6EAA0C21-13U0I2YGPDJJY/view?region=eu-central-1#/Approval/approve-before-publication/approve/c6176b99-d90b-4054-b77b-96b41f36175e",
+        "customData": "Please Approve the Deployment"
+    }
+}
