@@ -5,7 +5,7 @@ import boto3
 import requests
 
 WEBHOOK_PARAMETER_NAME = os.environ.get("WEBHOOK_URL_PARAMETER", "/slackops/webhook-url")
-API_ENDPOINT = os.environ.get("API_ENDPOINT", "https://e6f0vj492m.execute-api.eu-central-1.amazonaws.com/prod/v1/validations")
+API_ENDPOINT = os.environ.get("API_ENDPOINT", "https://e6f0vj492m.execute-api.eu-central-1.amazonaws.com/prod/v1/approval")
 
 def build_slack_message(event: dict):
     custom_data = event["approval"]["customData"]
@@ -37,7 +37,7 @@ def build_slack_message(event: dict):
 				{
 					"type": "button",
                     "style": "primary",
-                    "url": f"{API_ENDPOINT}?token={token}&response=Approve",
+                    "url": f"{API_ENDPOINT}?token={token}&response=Approved",
 					"text": {
 						"type": "plain_text",
 						"text": "Approve",
@@ -47,7 +47,7 @@ def build_slack_message(event: dict):
 				{
 					"type": "button",
                     "style": "danger",
-                    "url": f"{API_ENDPOINT}?token={token}&response=Reject",
+                    "url": f"{API_ENDPOINT}?token={token}&response=Rejected",
 					"text": {
 						"type": "plain_text",
 						"text": "Reject",

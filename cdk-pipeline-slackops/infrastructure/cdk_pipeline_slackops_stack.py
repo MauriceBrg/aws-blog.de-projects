@@ -171,7 +171,7 @@ class CdkPipelineSlackopsStack(core.Stack):
                 credentials_role=api_gateway_role,
                 request_parameters={
                     "integration.request.header.x-amz-target": "'CodePipeline_20150709.PutApprovalResult'",
-                    "integration.request.header.content-type": "'application/x-amz-json-1.1'",
+                    "integration.request.header.Content-Type": "'application/x-amz-json-1.1'",
                 },
                 passthrough_behavior=apigateway.PassthroughBehavior.NEVER,
                 request_templates={
@@ -191,7 +191,14 @@ class CdkPipelineSlackopsStack(core.Stack):
                         response_parameters={
                             'method.response.header.error': 'integration.response.body'
                         }
-                    )
+                    ),
+                    apigateway.IntegrationResponse(
+                        status_code='200',
+                        selection_pattern="2\d{2}",
+                        response_parameters={
+                            'method.response.header.response': 'integration.response.body'
+                        }
+                    ),
                 ]
             )
         )
@@ -221,7 +228,13 @@ class CdkPipelineSlackopsStack(core.Stack):
                     response_parameters={
                         'method.response.header.error': True
                     }
-                )
+                ),
+                apigateway.MethodResponse(
+                    status_code='200',
+                    response_parameters={
+                        'method.response.header.response': True
+                    }
+                ),
             ],
             integration=approval_integration,
         )
@@ -244,7 +257,7 @@ class CdkPipelineSlackopsStack(core.Stack):
             handler="notification_handler",
             environment={
                 "WEBHOOK_URL_PARAMETER": ssm_parameter_webhook.parameter_name,
-                "API_ENDPOINT": rest_api.url_for_path("/v1/validations"),
+                "API_ENDPOINT": rest_api.url_for_path("/v1/approval"),
             }
         )
 
