@@ -1,7 +1,7 @@
 
 # Boto3 Init Times in different Lambda configurations
 
-This is the companion repo to my (soon to be published) blog post about the influence of the Lambda memory size in the time it takes to initialize the first boto3 client or resource in your Lambda function after a cold start.
+This is the companion repo to my [blog post](https://aws-blog.de/2021/02/how-boto3-impacts-the-cold-start-times-of-your-lambda-functions.html) about the influence of the Lambda memory size in the time it takes to initialize the first boto3 client or resource in your Lambda function after a cold start.
 
 ## Architecture
 
