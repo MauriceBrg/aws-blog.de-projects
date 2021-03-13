@@ -1,6 +1,7 @@
 import collections
 import csv
 import io
+import json
 import logging
 import os
 import random
@@ -22,6 +23,9 @@ INVOKER_TOPIC_ARN = os.environ.get("INVOKER_TOPIC_ARN", "N/A")
 
 # The item sizes we try to read from the table
 ITEM_SIZES_IN_KB = [4, 64, 128, 256, 400]
+
+FLAT_JSON_PATH = os.path.join(os.path.dirname(__file__), "flat_400kb_item.json")
+NESTED_JSON_PATH = os.path.join(os.path.dirname(__file__), "nested_400kb_item.json")
 
 def record_measurement_result(memory_size: str, test_method: str, item_size: str, time_in_millis: int):
     
@@ -82,20 +86,38 @@ def result_aggregator(event: dict, context):
 
         memory_size = item["memorySize"]
         test_method = item["testMethod"]
-
-        for key in item_keys:
-            values = item[key]
-
-            avg_value = int(statistics.mean([int(i) for i in values]))
-
-            result_dict[memory_size][f"{key}_{test_method[:1].upper()}"] = avg_value
-
+        
         result_dict[memory_size]["memorySize"] = memory_size
+
+        if test_method == "deserialize":
+            # Special case for just the parsing
+            
+            flat_values = item["DESERIALIZED_FLAT"]
+            avg_flat_value = int(statistics.mean([int(i) for i in flat_values]))
+            result_dict[memory_size]["DESERIALIZE_FLAT"] = avg_flat_value
+
+            nested_values = item["DESERIALIZED_NESTED"]
+            avg_nested_value = int(statistics.mean([int(i) for i in nested_values]))
+            result_dict[memory_size]["DESERIALIZE_NESTED"] = avg_nested_value
+
+        else:
+
+            for key in item_keys:
+                values = item[key]
+
+                avg_value = int(statistics.mean([int(i) for i in values]))
+
+                result_dict[memory_size][f"{key}_{test_method[:1].upper()}"] = avg_value
+
     
     field_names = ["memorySize"]
     for key in item_keys:
         field_names.append(f"{key}_C")
         field_names.append(f"{key}_R")
+
+    field_names.append("DESERIALIZE_FLAT")
+    field_names.append("DESERIALIZE_NESTED")
+
     mem_file = io.StringIO()
     writer = csv.DictWriter(
         mem_file,
@@ -200,6 +222,44 @@ def client_handler(event: dict, context):
 
 def resource_handler(event: dict, context):
 
+    # Measurements for pure json data
+    with open(FLAT_JSON_PATH) as flat_file, open(NESTED_JSON_PATH) as nested_file:
+        flat_file_content = flat_file.read()
+        nested_file_content = nested_file.read()
+    
+        started_at = datetime.now()
+        deserialized = json.loads(flat_file_content)
+
+        finished_at = datetime.now()
+
+        time_it_took_in_millis = int((finished_at - started_at).total_seconds() * 1000)
+
+        print(f"Deserialized the 400KB flat item in {time_it_took_in_millis}ms from disk.")
+
+        record_measurement_result(
+            memory_size=MEMORY_SIZE,
+            item_size=f"DESERIALIZED_FLAT",
+            test_method="deserialize",
+            time_in_millis=time_it_took_in_millis
+        )
+
+        started_at = datetime.now()
+        deserialized = json.loads(nested_file_content)
+
+        finished_at = datetime.now()
+
+        time_it_took_in_millis = int((finished_at - started_at).total_seconds() * 1000)
+
+        print(f"Deserialized the 400KB nested item in {time_it_took_in_millis}ms from disk.")
+
+        record_measurement_result(
+            memory_size=MEMORY_SIZE,
+            item_size=f"DESERIALIZED_NESTED",
+            test_method="deserialize",
+            time_in_millis=time_it_took_in_millis
+        )
+
+
     table = boto3.resource("dynamodb").Table(TABLE_NAME)
 
     # Get a sample item to make sure the connection to DynamoDB is already established.
@@ -265,7 +325,7 @@ def resource_handler(event: dict, context):
             time_in_millis=time_it_took_in_millis
         )
 
-def create_flat_item_of_size(size_in_kb: int) -> str:
+def create_flat_item_of_size(size_in_kb: int) -> dict:
     # based on calculations here: https://zaccharles.github.io/dynamodb-calculator/
 
     if size_in_kb not in range(1, 401):
@@ -287,7 +347,7 @@ def create_flat_item_of_size(size_in_kb: int) -> str:
     template["payload"]["S"] = payload
     return template
 
-def create_nested_item_of_size(size_in_kb: int) -> str:
+def create_nested_item_of_size(size_in_kb: int) -> dict:
     # based on calculations here: https://zaccharles.github.io/dynamodb-calculator/
 
     if size_in_kb not in range(1, 401):
