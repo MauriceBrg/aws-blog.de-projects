@@ -18,7 +18,7 @@ ecdsa==0.13.3
 future==0.17.1
 idna==2.8
 importlib-metadata==0.19
-Jinja2==2.10.1
+Jinja2==2.11.3
 jmespath==0.9.4
 jsondiff==1.1.2
 jsonpatch==1.24
