@@ -7,6 +7,7 @@ from aws_cdk import (
     RemovalPolicy,
     aws_dynamodb as dynamodb,
     aws_lambda as _lambda,
+    aws_lambda_event_sources as events,
     aws_sqs as sqs,
 )
 from constructs import Construct
@@ -47,7 +48,7 @@ class LambdaSqsFiltersStack(Stack):
             handler="update_counter.lambda_handler"
         )
 
-        # Filters aren't yet (CDK v2.4.0) supported for DynamoDB, we have to
+        # Filters aren't yet (CDK v2.8.0) supported for DynamoDB, we have to
         # go to the low level CFN stuff here
         _lambda.CfnEventSourceMapping(
             self,
