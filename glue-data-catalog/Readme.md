@@ -1,3 +1,7 @@
+This is the repo for the following blog post(s):
+
+- [Solving HIVE_PARTITION_SCHEMA_MISMATCH Errors in Athena](https://aws-blog.de/2022/01/solving-hive-partition-schema-mismatch-errors-in-athena.html)
+
 ## Setup
 
 1. Create a new virtual environment and activate it: `python3 -m venv .venv  && source .venv/bin/activate`
