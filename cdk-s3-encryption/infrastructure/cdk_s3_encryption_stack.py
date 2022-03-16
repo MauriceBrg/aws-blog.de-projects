@@ -52,6 +52,25 @@ class CdkS3EncryptionStack(core.Stack):
             )
         )
 
+        bucket_with_sse_s3.add_to_resource_policy(
+            iam.PolicyStatement(
+                sid="AllowSSLRequestsOnly",
+                effect=iam.Effect.DENY,
+                actions=["s3:*"],
+                conditions={
+                    "Bool": {
+                        "aws:SecureTransport": "false"
+                    }
+                },
+                principals=[iam.AnyPrincipal()],
+                resources=[
+                    bucket_with_sse_s3.arn_for_objects("*"),
+                    bucket_with_sse_s3.bucket_arn
+                ]
+            )
+        )
+
+
         bucket_with_sse_kms = s3.Bucket(
             self,
             "bucket-with-sse-kms",
@@ -90,6 +109,24 @@ class CdkS3EncryptionStack(core.Stack):
                 principals=[iam.AnyPrincipal()],
                 resources=[
                     bucket_with_sse_kms.arn_for_objects("*")
+                ]
+            )
+        )
+
+        bucket_with_sse_kms.add_to_resource_policy(
+            iam.PolicyStatement(
+                sid="AllowSSLRequestsOnly",
+                effect=iam.Effect.DENY,
+                actions=["s3:*"],
+                conditions={
+                    "Bool": {
+                        "aws:SecureTransport": "false"
+                    }
+                },
+                principals=[iam.AnyPrincipal()],
+                resources=[
+                    bucket_with_sse_kms.arn_for_objects("*"),
+                    bucket_with_sse_kms.bucket_arn
                 ]
             )
         )

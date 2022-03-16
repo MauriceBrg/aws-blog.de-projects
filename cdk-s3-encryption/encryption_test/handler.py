@@ -23,6 +23,8 @@ class EncryptionTestCases(unittest.TestCase):
         self.sse_kms_bucket = os.environ["SSE_KMS_BUCKET"]
         self.sse_kms_key_id = os.environ["KMS_FOR_S3"]
         self.other_kms_id = os.environ["DIFFERENT_KMS"]
+
+        self.s3_http_resource = boto3.resource("s3", use_ssl=False)
     
     def test_put_without_encryption_to_sse_s3_bucket_should_work(self):
         """Default encryption should take over when we specify nothing"""
@@ -142,6 +144,41 @@ class EncryptionTestCases(unittest.TestCase):
                 SSEKMSKeyId=self.other_kms_id
             )
             sse_kms_obj.delete()
+
+    def test_unencrypted_upload_fails_for_sse_kms_bucket(self):
+        """
+        Assert that we get an encryption if we try to upload via HTTP.
+        """
+
+        with self.assertRaises(ClientError):
+
+            sse_kms_obj = self.s3_http_resource.Object(
+                self.sse_kms_bucket,
+                "test/test_http_upload_fails"
+            )
+
+            sse_kms_obj.put(
+                Body="test_http_upload_fails"
+            )
+            sse_kms_obj.delete()
+
+
+    def test_unencrypted_upload_fails_for_sse_s3_bucket(self):
+        """
+        Assert that we get an encryption if we try to upload via HTTP.
+        """
+
+        with self.assertRaises(ClientError):
+
+            sse_s3_obj = self.s3_http_resource.Object(
+                self.sse_s3_bucket,
+                "test/test_http_upload_fails"
+            )
+
+            sse_s3_obj.put(
+                Body="test_http_upload_fails"
+            )
+            sse_s3_obj.delete()
 
 
 def lambda_handler(event, context):
