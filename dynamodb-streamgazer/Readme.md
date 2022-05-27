@@ -1,5 +1,7 @@
 # DynamoDB Streamgazer
 
+Read the [companion article first](https://aws-blog.de/2022/05/getting-a-near-real-time-view-of-a-dynamodb-stream-with-python.html)
+
 ## Install
 
 Install the dependencies `pip install -r requirements`.
