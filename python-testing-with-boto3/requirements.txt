@@ -10,7 +10,7 @@ certifi==2019.6.16
 cffi==1.12.3
 cfn-lint==0.23.1
 chardet==3.0.4
-cryptography==2.7
+cryptography==3.2
 DateTime==4.3
 docker==4.0.2
 docutils==0.14
