@@ -1,7 +1,7 @@
 attrs==19.1.0
 boto3==1.9.214
 botocore==1.12.214
-certifi==2019.6.16
+certifi==2022.12.7
 cfn-resource-provider==1.0.2
 chardet==3.0.4
 docutils==0.15.2
