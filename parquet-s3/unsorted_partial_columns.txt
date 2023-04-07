@@ -1,0 +1,131 @@
+Stats for s3://mbexchange/unsorted_test.parquet
+Column: category - Physical Type: BYTE_ARRAY - Logical Type String
+Column: number - Physical Type: FIXED_LEN_BYTE_ARRAY - Logical Type Decimal(precision=9, scale=2)
+Column: timestamp - Physical Type: INT64 - Logical Type Timestamp(isAdjustedToUTC=true, timeUnit=microseconds, is_from_converted_type=false, force_set_converted_type=false)
+Column: uuid - Physical Type: BYTE_ARRAY - Logical Type String
+========== Row Group 0 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 00002c578e084b46840862ffdb66842a, Max: ffff143211da4bde96f1cc8d075c5738
+========== Row Group 1 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 0000382965c34389bf78bfdd47d1c2c9, Max: ffffe19361874542b6355cfafe36cee2
+========== Row Group 2 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 00005cb6271b46178b275469e430daf7, Max: ffff98cadd4444e2a88be28e8a8f6ccf
+========== Row Group 3 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 00005dccda584443b1321fa96080c67d, Max: fffef7634ace45dda1bf1f9cbaf90e46
+========== Row Group 4 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 0000108c81b3465eae916202c36287af, Max: ffffdd98d47e4851bfe206127c519071
+========== Row Group 5 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 00000235aa1c4e88a23897016d1d72f4, Max: ffffda35c72e4e98b8fcffd01800b729
+========== Row Group 6 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 0000042d4a7f447cb318833a87cbdd84, Max: fffff4548936424f967fbdc07c68ebfd
+========== Row Group 7 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 00004a00247f49259370d1f774a9734e, Max: fffff3d4e7ab424fa9caa1c151b0f6b2
+========== Row Group 8 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 000026153a2d4ac3a0cf585cde2c4b7e, Max: fffff3ef672a42eea52c5dbd5c81da2e
+========== Row Group 9 ==========
+Num Rows: 200000, Total size: 7.11 MiB
+Col: category, Min: blue, Max: red
+Col: number, Min: 3.33, Max: 3000000.00
+Col: timestamp, Min: 2022-10-01 04:00:00+00:00, Max: 2022-10-06 04:00:00+00:00
+Col: uuid, Min: 0000096c7e9a47aab6b77af2d4900cde, Max: ffffd9ce6a3246e7bdc9d72a7f48f6cb
+==================================================
+Filter Scenario: full frame / no filter
+Requested columns: category, number, timestamp
+------------------------------
+Running pandas-s3fs implementation
+Memory usage: 344.91 MiB
+Sent: 358.00 KiB - Bytes received: 55704.00 KiB
+------------------------------
+Running pyarrow implementation
+Memory usage: 344.91 MiB
+Sent: 119.00 KiB - Bytes received: 2336.00 KiB
+==================================================
+Filter Scenario: category == 'blue'
+Requested columns: category, number, timestamp
+------------------------------
+Running pandas-s3fs implementation
+Memory usage: 172.75 MiB
+Sent: 250.00 KiB - Bytes received: 55610.00 KiB
+------------------------------
+Running pyarrow implementation
+Memory usage: 172.75 MiB
+Sent: 117.00 KiB - Bytes received: 2335.00 KiB
+==================================================
+Filter Scenario: category in ('red', 'gray')
+Requested columns: category, number, timestamp
+------------------------------
+Running pandas-s3fs implementation
+Memory usage: 172.16 MiB
+Sent: 260.00 KiB - Bytes received: 55606.00 KiB
+------------------------------
+Running pyarrow implementation
+Memory usage: 172.16 MiB
+Sent: 117.00 KiB - Bytes received: 2336.00 KiB
+==================================================
+Filter Scenario: number <= 8.24
+Requested columns: category, number, timestamp
+------------------------------
+Running pandas-s3fs implementation
+Memory usage: 172.87 MiB
+Sent: 331.00 KiB - Bytes received: 55655.00 KiB
+------------------------------
+Running pyarrow implementation
+Memory usage: 172.87 MiB
+Sent: 71.00 KiB - Bytes received: 2284.00 KiB
+==================================================
+Filter Scenario: timestamp <= '2022-10-03T17:00:00+12:00'
+Requested columns: category, number, timestamp
+------------------------------
+Running pandas-s3fs implementation
+Memory usage: 172.69 MiB
+Sent: 315.00 KiB - Bytes received: 55674.00 KiB
+------------------------------
+Running pyarrow implementation
+Memory usage: 172.69 MiB
+Sent: 133.00 KiB - Bytes received: 2353.00 KiB
+==================================================
+Filter Scenario: timestamp <= '2022-10-03T17:00:00+12:00' & category == 'blue'
+Requested columns: category, number, timestamp
+------------------------------
+Running pandas-s3fs implementation
+Memory usage: 115.28 MiB
+Sent: 304.00 KiB - Bytes received: 55692.00 KiB
+------------------------------
+Running pyarrow implementation
+Memory usage: 115.28 MiB
+Sent: 142.00 KiB - Bytes received: 2366.00 KiB
