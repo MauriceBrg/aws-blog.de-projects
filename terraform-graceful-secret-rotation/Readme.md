@@ -1,10 +1,12 @@
 # Graceful Credential Rotation for IAM users
 
-This is a demo accompanied by a blog post. Link TBC.
+This is a demo accompanied by a blog post:
+
+https://www.tecracer.com/blog/2023/06/advanced-credential-rotation-for-iam-users-with-a-grace-period.html
 
 ## Preparation
 
-The main things to configure are stored in the ´variables.tf´:
+The main things to configure are stored in the `variables.tf`:
 
 ```lang-hcl
 variable "iam-user-name" {
