@@ -51,13 +51,9 @@ def lambda_handler(
     event: dict[str, "Any"], context: dict[str, "Any"]
 ) -> dict[str, "Any"]:
 
-    print(json.dumps(event))
-
     # We need the path with the stage prefix, which the API gateway hides a bit.
     event["path"] = get_raw_path(event)
     handle_event = build_handler(get_url_prefix(event))
 
-    print(json.dumps(event))
     response = handle_event(event, context)
-    # print(json.dumps(response, indent=2, sort_keys=True))
     return response

@@ -1,9 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: >
-  sam-dash
-
-  Sample SAM Template for sam-dash
 
 Globals:
   Function:
@@ -17,7 +13,7 @@ Globals:
 
 Resources:
   FrontendFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: frontend/
       Handler: app.lambda_handler
@@ -39,5 +35,5 @@ Resources:
 
 Outputs:
   ServerlessDashApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Description: "API Gateway endpoint URL for Prod stage for Serverless Dash App"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
