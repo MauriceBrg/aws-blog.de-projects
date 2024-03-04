@@ -9,7 +9,6 @@ Globals:
     BinaryMediaTypes:
       # The following is important for correct handling (b64) of binary data, e.g. png, jpg
       - "*/*"
-      - "*~1*"
 
 Resources:
   FrontendFunction:

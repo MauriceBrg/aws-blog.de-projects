@@ -8,6 +8,8 @@ It uses [AWS SAM](https://aws.amazon.com/serverless/sam/) to build and deploy th
 
 ![Webapp Screenshot](screenshot.png)
 
+A detailed description of the setup can be found in this blog post: [Deploying a Serverless Dash App with AWS SAM and Lambda](https://www.tecracer.com/blog/2024/03/deploying-a-serverless-dash-app-with-aws-sam-and-lambda.html)
+
 # Code
 
 The main webapp is located in `frontend/dash_app.py`.
