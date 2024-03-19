@@ -1,0 +1,5 @@
+{
+    "type": "TOKEN",
+    "methodArn": "arn:aws:execute-api:eu-west-1:123123123123:2bwhgeifik/Prod/GET/",
+    "authorizationToken": "sdf sdf="
+}

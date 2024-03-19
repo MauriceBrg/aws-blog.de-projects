@@ -1,0 +1,106 @@
+{
+    "resource": "/",
+    "path": "/",
+    "httpMethod": "GET",
+    "headers": {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "en-US,en;q=0.5",
+        "dnt": "1",
+        "Host": "test2.mb-trc.de",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "cross-site",
+        "sec-gpc": "1",
+        "upgrade-insecure-requests": "1",
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0",
+        "X-Amzn-Trace-Id": "Root=1-65e074f6-4f37656c7708d42348c2a741",
+        "X-Forwarded-For": "74.91.133.92",
+        "X-Forwarded-Port": "443",
+        "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+        "accept": [
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8"
+        ],
+        "accept-encoding": [
+            "gzip, deflate, br"
+        ],
+        "accept-language": [
+            "en-US,en;q=0.5"
+        ],
+        "dnt": [
+            "1"
+        ],
+        "Host": [
+            "test2.mb-trc.de"
+        ],
+        "sec-fetch-dest": [
+            "document"
+        ],
+        "sec-fetch-mode": [
+            "navigate"
+        ],
+        "sec-fetch-site": [
+            "cross-site"
+        ],
+        "sec-gpc": [
+            "1"
+        ],
+        "upgrade-insecure-requests": [
+            "1"
+        ],
+        "User-Agent": [
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0"
+        ],
+        "X-Amzn-Trace-Id": [
+            "Root=1-65e074f6-4f37656c7708d42348c2a741"
+        ],
+        "X-Forwarded-For": [
+            "74.91.133.92"
+        ],
+        "X-Forwarded-Port": [
+            "443"
+        ],
+        "X-Forwarded-Proto": [
+            "https"
+        ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+        "resourceId": "ezlz1n601i",
+        "resourcePath": "/",
+        "httpMethod": "GET",
+        "extendedRequestId": "T5c2mELXliAECjw=",
+        "requestTime": "29/Feb/2024:12:13:42 +0000",
+        "path": "/",
+        "accountId": "123123123123",
+        "protocol": "HTTP/1.1",
+        "stage": "Prod",
+        "domainPrefix": "test2",
+        "requestTimeEpoch": 1709208822734,
+        "requestId": "4db4afcd-33f0-429a-8e77-57ac2d0a8653",
+        "identity": {
+            "cognitoIdentityPoolId": null,
+            "accountId": null,
+            "cognitoIdentityId": null,
+            "caller": null,
+            "sourceIp": "74.91.133.92",
+            "principalOrgId": null,
+            "accessKey": null,
+            "cognitoAuthenticationType": null,
+            "cognitoAuthenticationProvider": null,
+            "userArn": null,
+            "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:123.0) Gecko/20100101 Firefox/123.0",
+            "user": null
+        },
+        "domainName": "test2.mb-trc.de",
+        "deploymentId": "0mfate",
+        "apiId": "ssjghcuf74"
+    },
+    "body": null,
+    "isBase64Encoded": false
+}

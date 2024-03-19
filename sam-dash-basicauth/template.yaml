@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 1024
+    Runtime: python3.12
+    Architectures:
+      - x86_64
+  Api:
+    Auth:
+      Authorizers:
+        BasicAuth:
+          FunctionArn: !GetAtt AuthorizerFunction.Arn
+      DefaultAuthorizer: BasicAuth
+    BinaryMediaTypes:
+      - "*/*"
+Parameters:
+  AuthenticationPrompt:
+    Type: String
+    Default: Serverless Dash Frontend Authentication
+Resources:
+  FrontendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: frontend/
+      Handler: app.lambda_handler
+      Events:
+        RootIntegration:
+          Type: Api
+          Properties:
+            Path: /
+            Method: ANY
+        ProxyIntegration:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: ANY
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: basic_auth_authorizer/
+      Handler: basic_auth.lambda_handler
+      Environment:
+        Variables:
+          # HARDCODED | SSM | SECRETS_MANAGER
+          CREDENTIAL_PROVIDER_NAME: SSM
+
+          # SSM: Uncomment this line to use an SSM Parameter for password storage
+          SSM_CREDENTIAL_PARAMETER_NAME: !Ref SsmParameterWithCredentials
+
+          # SECRETSMANAGER: Uncomment this line to use a Secretsmanager Secret for password storage
+          # SECRETSMANAGER_CREDENTIAL_SECRET_NAME: !GetAtt SecretsManagerSecretWithCredentials.Id
+      Policies:
+        # SSM: Uncomment this line to use an SSM Parameter for password storage
+        - SSMParameterReadPolicy:
+            ParameterName: !Ref SsmParameterWithCredentials
+        # SECRETSMANAGER: Uncomment this line to use a Secretsmanager Secret for password storage
+        # - AWSSecretsManagerGetSecretValuePolicy:
+        #     SecretArn: !Ref SecretsManagerSecretWithCredentials
+
+  BasicAuthPrompt:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseType: UNAUTHORIZED
+      RestApiId: !Ref ServerlessRestApi
+      StatusCode: "401"
+      ResponseParameters:
+        gatewayresponse.header.WWW-Authenticate: !Sub '''Basic realm="${AuthenticationPrompt}"'''
+
+  # SSM: Uncomment this resource if you want to use SSM for credential storage
+  SsmParameterWithCredentials:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      # JSON-Object, Key = Username(s), Value = Password(s), e.g. {"username": "password"}
+      Value: "{}"
+
+  # SECRETSMANAGER: Uncomment this resource if you want to use Secrets Manager for credential storage
+  # SecretsManagerSecretWithCredentials:
+  #   Type: AWS::SecretsManager::Secret
+  #   Properties: {}
+Outputs:
+  ServerlessDashApi:
+    Description: API Gateway endpoint URL for Prod stage for Serverless Dash App
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
