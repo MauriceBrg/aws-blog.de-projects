@@ -9,7 +9,7 @@ It uses [AWS SAM](https://aws.amazon.com/serverless/sam/) to build and deploy th
 
 A detailed description of the basic setup can be found in this blog post: [Deploying a Serverless Dash App with AWS SAM and Lambda](https://www.tecracer.com/blog/2024/03/deploying-a-serverless-dash-app-with-aws-sam-and-lambda.html)
 
-An explanation of the Basic Auth setup is available here: tbc.
+An explanation of the Basic Auth setup is available here: [Adding Basic Authentication to the Serverless Dash App](https://www.tecracer.com/blog/2024/03/adding-basic-authentication-to-the-serverless-dash-app.html)
 
 # Code
 
