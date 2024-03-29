@@ -1,0 +1,10 @@
+version: "3"
+
+tasks:
+  local-frontend:
+    desc: Run the frontend locally
+    dir: frontend/
+    env:
+      PYTHONPATH: frontend/
+    cmds:
+      - python dash_app.py

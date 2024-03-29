@@ -1,0 +1,4 @@
+boto3
+dash==2.15.0
+dash-bootstrap-components==1.5.0
+apig-wsgi==2.18.0
