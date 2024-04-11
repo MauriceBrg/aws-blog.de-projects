@@ -19,12 +19,9 @@ confirm_changeset = true
 resolve_s3 = true
 
 # TODO: Update this after the initial deployment
-parameter_overrides = "UserPoolDomainName=\"serverless-dash-235\" ApiGatewayStageName=\"Prod\" ApiGatewayIdAfterDeployment=\"lyuasipf5j\""
+parameter_overrides = "UserPoolDomainName=\"update-me\" ApiGatewayStageName=\"Prod\" ApiGatewayIdAfterDeployment=\"update-me\""
 s3_prefix = "sam-dash-with-cognito-auth"
 region = "eu-central-1"
-image_repositories = [
-    "FrontendFunction=689680084035.dkr.ecr.eu-central-1.amazonaws.com/samdashwithcognitoauth19f71783/frontendfunction9c2382cfrepo",
-]
 
 [default.package.parameters]
 resolve_s3 = true

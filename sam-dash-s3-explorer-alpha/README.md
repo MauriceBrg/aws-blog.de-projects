@@ -13,7 +13,7 @@ A detailed description of the basic setup can be found in this blog post: [Deplo
 
 An explanation of the Basic Auth setup is available here: [Adding Basic Authentication to the Serverless Dash App](https://www.tecracer.com/blog/2024/03/adding-basic-authentication-to-the-serverless-dash-app.html)
 
-A blog post explaining this app can be found here: tbc.
+A blog post explaining this app can be found here: [Build a Serverless S3 Explorer with Dash](https://www.tecracer.com/blog/2024/04/build-a-serverless-s3-explorer-with-dash.html)
 
 # Code
 

@@ -39,9 +39,12 @@ The `app.py` is the entry point for the Lambda function and takes care of transl
 ## Steps to deploy
 
 1. Check out this repository and navigate into the directory
+1. Update the value of the `UserPoolDomainName` in the `samconfig.toml`
 1. Run `sam validate`, you should see a green output confirming that everything is fine
 1. Run `sam build` to bundle the Lambda function and create the SAM template
-1. Run `sam deploy` to deploy the infrastructure in your account. Enter `y` to confirm that you want to deploy the Changeset.
+1. Run `sam deploy -g` to deploy the infrastructure in your account. Allow SAM to create an ECR repository.
+1. Update the value of the `ApiGatewayIdAfterDeployment` in the `samconfig.toml` based on the output of the previous step
+1. Run `sam deploy` again
 
 # Tests
 
