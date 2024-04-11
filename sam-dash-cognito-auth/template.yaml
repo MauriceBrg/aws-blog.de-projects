@@ -122,6 +122,8 @@ Resources:
         - "http://localhost:8000/"
         - "http://localhost:8050/"
       SupportedIdentityProviders:
+        # TODO: You can also replace this with your third
+        #       party identity provider.
         - "COGNITO"
 Outputs:
   ServerlessDashApi:
