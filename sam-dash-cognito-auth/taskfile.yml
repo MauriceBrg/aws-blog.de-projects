@@ -1,0 +1,18 @@
+version: "3"
+
+tasks:
+  local-frontend:
+    desc: Run the frontend locally
+    dir: frontend/
+    env:
+      COGNITO_USER_POOL_ID: "eu-central-1_3ylDrsZAa"
+      COGNITO_REGION: "eu-central-1"
+      COGNITO_CLIENT_ID: "14bnsf5lnvai49pc62qfs4517q"
+      OAUTHLIB_INSECURE_TRANSPORT: 1
+    cmds:
+      - python dash_app.py
+  deploy:
+    desc: Build and deploy the App
+    cmds:
+      - sam build
+      - sam deploy

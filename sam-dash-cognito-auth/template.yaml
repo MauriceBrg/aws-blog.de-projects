@@ -1,0 +1,132 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 1024
+  Api:
+    BinaryMediaTypes:
+      # The following is important for correct handling (b64) of binary data, e.g. png, jpg
+      - "*/*"
+
+Parameters:
+  UserPoolDomainName:
+    Type: String
+    # TODO: Overwrite this
+    Default: serverless-dash-235
+  ApiGatewayStageName:
+    Type: String
+    Default: Prod
+  # We need this to avoid some circular dependencies
+  ApiGatewayIdAfterDeployment:
+    Type: String
+    Default: add-me-after-deployment
+
+Resources:
+  FrontendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      PackageType: Image
+      Architectures:
+        - x86_64
+      Environment:
+        Variables:
+          COGNITO_REGION: !Ref AWS::Region
+          COGNITO_USER_POOL_ID: !Ref UserPool
+          COGNITO_CLIENT_ID: !Ref UserPoolClient
+      Events:
+        # We want to capture both the root as well as everything after the root path
+        RootIntegration:
+          Type: Api
+          Properties:
+            Path: "/"
+            Method: ANY
+        ProxyIntegration:
+          Type: Api
+          Properties:
+            Path: "/{proxy+}"
+            Method: ANY
+
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:DescribeUserPool
+                - cognito-idp:DescribeUserPoolClient
+              Resource: !Sub "arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${UserPool}"
+    Metadata:
+      DockerTag: frontend-function
+      DockerContext: ./frontend
+      Dockerfile: Dockerfile
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UsernameAttributes:
+        - "email"
+      UsernameConfiguration:
+        CaseSensitive: false
+      AdminCreateUserConfig:
+        # Disable self-service signup
+        AllowAdminCreateUserOnly: true
+      Schema:
+        - Mutable: true
+          Name: "email"
+          Required: true
+        - Mutable: true
+          Name: "name"
+          Required: true
+      AutoVerifiedAttributes:
+        - "email"
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain:
+        Ref: UserPoolDomainName
+      UserPoolId:
+        Ref: UserPool
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId:
+        Ref: UserPool
+      AllowedOAuthFlows:
+        - "implicit"
+        - "code"
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthScopes:
+        # TODO: Limit maybe?
+        - "phone"
+        - "email"
+        - "openid"
+        - "profile"
+      CallbackURLs:
+        # Add your custom domain here if you have one
+        - !Sub "https://${ApiGatewayIdAfterDeployment}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStageName}/login/cognito/authorized"
+        # For local development, the port varies sometimes
+        - "http://localhost:5000/login/cognito/authorized"
+        - "http://localhost:8000/login/cognito/authorized"
+        - "http://localhost:8050/login/cognito/authorized"
+        - "http://localhost:3000/login/cognito/authorized"
+      GenerateSecret: true
+      LogoutURLs:
+        # Add your custom domain here if you have one
+        - !Sub "https://${ApiGatewayIdAfterDeployment}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStageName}/"
+
+        # For local development, the port varies sometimes
+        - "http://localhost:3000/"
+        - "http://localhost:5000/"
+        - "http://localhost:8000/"
+        - "http://localhost:8050/"
+      SupportedIdentityProviders:
+        - "COGNITO"
+Outputs:
+  ServerlessDashApi:
+    Description: "API Gateway endpoint URL for Prod stage for Serverless Dash App"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/${ApiGatewayStageName}/"
+  ValueForApiGatewayIdAfterDeployment:
+    Description: "Set ApiGatewayidAfterDeployment to this value and run sam deploy again"
+    Value: !Ref ServerlessRestApi

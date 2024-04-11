@@ -1,0 +1,4 @@
+dash==2.15.0
+apig-wsgi==2.18.0
+dash-cognito-auth>=0.0.4
+dash-bootstrap-components==1.5.0
