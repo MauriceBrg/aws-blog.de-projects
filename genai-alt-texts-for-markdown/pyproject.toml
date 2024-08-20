@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src/"]
+
+[project]
+name = "genai-alt-texts-for-markdown"
+version = "0.0.1"
+dependencies = ["boto3>=1.34"]
+requires-python = ">= 3.10"
+authors = [{ name = "Maurice Borgmeier", email = "mborgmeier@tecracer.de" }]
+description = "Package that allows you to add alt-texts to images in your Markdown files based on a Foundation model in Amazon Bedrock."
+readme = "README.md"
+
+[project.scripts]
+discover-image-links = "discover_image_links:main"
+generate-alt-texts = "generate_alt_tags:main"
+update-image-links = "update_image_links:main"
