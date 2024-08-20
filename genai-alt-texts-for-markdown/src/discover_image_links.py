@@ -58,19 +58,25 @@ def get_image_path(
 
     potential_paths: list[pathlib.Path] = []
     image_path = pathlib.Path(image_link.path)
+    image_path_without_leading_slash = str(image_path).removeprefix("/")
+    image_path_rel = pathlib.Path(image_path_without_leading_slash)
 
     # May be an absolute path
     potential_paths.append(image_path)
+    potential_paths.append(image_path_rel)
 
     # Relative to article path
     potential_paths.append(article_path.parent / image_path)
+    potential_paths.append(article_path.parent / image_path_rel)
 
     # Current workdir
     potential_paths.append(pathlib.Path(os.getcwd()) / image_path)
+    potential_paths.append(pathlib.Path(os.getcwd()) / image_path_rel)
 
     # Relative to any of the asset paths
     for asset_path in asset_paths:
         potential_paths.append(pathlib.Path(asset_path) / image_path)
+        potential_paths.append(pathlib.Path(asset_path) / image_path_rel)
 
     for path in potential_paths:
         if path.exists():
@@ -118,8 +124,8 @@ def main():
     args = parser.parse_args()
 
     article_base_bath: pathlib.Path = args.markdown_base_dir
-    asset_paths = args.asset_base_dir or []
-    markdown_docs = article_base_bath.glob("*.md", case_sensitive=False)
+    asset_paths = [args.asset_base_dir] or []
+    markdown_docs = article_base_bath.glob("**/*.md", case_sensitive=False)
 
     metadata_path = str(args.metadata_file)
     metadata = MetadataStorage(metadata_path)
@@ -174,6 +180,12 @@ def main():
 
 if __name__ == "__main__":
 
-    # sys.argv.append("tests/assets/articles")
+    sys.argv.append("--asset-base-dir")
+    sys.argv.append(
+        "/Users/mauriceborgmeier/projects/prv/mauricebrg.com/website/static"
+    )
+    sys.argv.append(
+        "/Users/mauriceborgmeier/projects/prv/mauricebrg.com/website/content"
+    )
     # sys.argv.append("--help")
     main()
