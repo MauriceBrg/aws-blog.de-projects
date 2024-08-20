@@ -178,3 +178,4 @@ pyrightconfig.json
 
 local/
 metadata.json
+.DS_Store

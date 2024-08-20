@@ -7,27 +7,40 @@ import sys
 
 import boto3
 
-from metadata import MetadataStorage
+from metadata import MetadataStorage, ImageLinkRecord
 
 
 LOGGER = logging.getLogger(__name__)
 
+CHARS_BEFORE_LINK = 1000
+CHARS_BEHIND_LINK = 1000
 
-def get_alt_text_for_image(article_context: str, image_path: str) -> str:
 
-    # Initialize the Bedrock client
+def get_alt_text_for_image(
+    article_content: str, image_link_record: ImageLinkRecord
+) -> str:
+
     client = boto3.client("bedrock-runtime")
 
-    context = f"""Summarize the following image for an HTML alt-Tag.
-    It appears in the following article between <start> and <end>: 
-    <start> {article_context} <end>
+    beginning = article_content.find(image_link_record["original_link_md"])
+    start_idx = max(0, beginning - CHARS_BEFORE_LINK)
+    end_idx = min(
+        len(article_content),
+        beginning + len(image_link_record["original_link_md"]) + CHARS_BEHIND_LINK,
+    )
+    article_content_short = article_content[start_idx:end_idx]
+
+    prompt = f"""
+    Summarize the following image into a single sentence and keep your summary as brief as possible.
+    Only output the content for an HTML Image alt-attribute. Focus on accessibility.
+
+    You can use this as context, the image is refered to as {image_link_record['original_link_md']}
     
-    Use the article for context.
-    Be as brief as possible and only output the content for the alt-attribute.
+    {article_content_short}
     """
 
     # Read the image file
-    with open(image_path, "rb") as image_file:
+    with open(image_link_record["abs_img_path"], "rb") as image_file:
         image_data = image_file.read()
 
     payload = {
@@ -39,7 +52,7 @@ def get_alt_text_for_image(article_context: str, image_path: str) -> str:
                 {
                     "role": "user",
                     "content": [
-                        {"type": "text", "text": context},
+                        {"type": "text", "text": prompt},
                         {
                             "type": "image",
                             "source": {
@@ -94,7 +107,7 @@ def main():
         for link in links:
 
             alt_text = get_alt_text_for_image(
-                article_context=article_content, image_path=link["abs_img_path"]
+                article_content=article_content, image_link_record=link
             )
             new_link = f"![{alt_text}]({link['rel_img_path']})"
 
