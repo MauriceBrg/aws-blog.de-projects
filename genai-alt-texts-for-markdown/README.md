@@ -1,5 +1,15 @@
 # Create alt-texts for images in Markdown files using GenAI
 
+For context, I suggest you check out one of these blog posts, that explains the idea and background:
+
+- [tecRacer Blog](https://www.tecracer.com/blog/2024/08/improving-accessibility-by-generating-image-alt-texts-using-genai.html)
+- [dev.to](https://dev.to/aws-builders/improving-accessibility-by-generating-image-alt-texts-using-genai-22a4)
+- [mauricebrg.com](https://mauricebrg.com/2024/08/improving-accessibility-by-generating-img-alt-texts-using-genai.html)
+
+(Same content, [POSSE](https://indieweb.org/POSSE))
+
+In a nutshell, the idea is to improve accessibility by generating `alt` texts in Markdown image links that help screen readers understand what the images in your content are about. It's primarily aimed at static websites built from Markdown documents but can also be used for regular README files etc. - more details in the aforementioned blog.
+
 ## Installation
 
 **Prerequisites**
