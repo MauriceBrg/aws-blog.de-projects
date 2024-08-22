@@ -123,8 +123,7 @@ def main():
             )
 
             metadata.save(link)
-
-    metadata.serialize()
+            metadata.serialize()  # Kinda inefficient, but if something breaks it's consistent.
 
 
 if __name__ == "__main__":
