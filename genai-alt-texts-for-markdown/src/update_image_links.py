@@ -37,7 +37,6 @@ def main():
     )
 
     args = parser.parse_args()
-    print(args)
 
     metadata_path = str(args.metadata_file)
     metadata = MetadataStorage(metadata_path)
@@ -64,7 +63,7 @@ def main():
 
         with open(file_path, "w", encoding="utf-8") as f:
             f.write(article_content)
-        # metadata.serialize()  # Kinda inefficient, but if something breaks it's consistent.
+        metadata.serialize()  # Kinda inefficient, but if something breaks it's consistent.
 
 
 if __name__ == "__main__":

@@ -32,11 +32,12 @@ def get_alt_text_for_image(
 
     prompt = f"""
     Summarize the following image into a single sentence and keep your summary as brief as possible.
-    Only output the content for an HTML Image alt-attribute. Focus on accessibility.
 
-    You can use this as context, the image is refered to as {image_link_record['original_link_md']}
-    
+    You can use this text between <start> and <end> as context, the image is refered to as {image_link_record['original_link_md']}
+    <start>
     {article_content_short}
+    <end>
+    Exclusively output the content for an HTML Image alt-attribute, one line only, no code, no introduction, only the text, focus on accessibility.
     """
 
     # Read the image file
@@ -115,7 +116,7 @@ def main():
             link["status"] = "READY_TO_UPDATE"
             link["new_link_md"] = new_link
             LOGGER.debug(
-                "The alt-text for the image '%s' in %s will be '%s'",
+                "The alt-text for the image '%s' in %s will be \n\n%s\n",
                 link["rel_img_path"],
                 file_path,
                 alt_text,
