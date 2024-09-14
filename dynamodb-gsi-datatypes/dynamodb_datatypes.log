@@ -1,0 +1,74 @@
+Table created, waiting for table to become active...
+
+========== BEGIN Putting item with correct datatypes ==========
+
+Putting item with correct datatypes
+...done.
+
+=========== END Putting item with correct datatypes ===========
+
+
+========== BEGIN Putting item with incorrect datatype in base table ==========
+
+Putting item with incorrect datatype in base table
+Error: ValidationException
+Message: One or more parameter values were invalid: Type mismatch for key PK expected: S actual: N
+
+=========== END Putting item with incorrect datatype in base table ===========
+
+
+========== BEGIN Putting item with incorrect datatype in GSI before the GSI exists ==========
+
+Putting item with incorrect datatype in GSI before the GSI exists
+...done.
+Putting another item with incorrect datatype in GSI before the GSI exists
+...done.
+
+=========== END Putting item with incorrect datatype in GSI before the GSI exists ===========
+
+Adding the GSI to the table
+Index created, waiting for it to become active...
+
+========== BEGIN Putting item with incorrect datatype in GSI after the GSI exists ==========
+
+Putting item with incorrect datatype in GSI after the GSI exists
+Error: ValidationException
+Message: One or more parameter values were invalid: Type mismatch for Index Key GSI1PK Expected: S Actual: N IndexName: GSI1
+We can no longer add items with datatypes that conflict with index attributes.
+
+=========== END Putting item with incorrect datatype in GSI after the GSI exists ===========
+
+
+========== BEGIN Scan GSI1 ==========
+
+Items in GSI1: [{'PK': {'S': 'ok'}, 'GSI1PK': {'S': 'ok'}}]
+Only the item with the correct datatypes ends up in GSI1
+
+=========== END Scan GSI1 ===========
+
+
+========== BEGIN Trying to update item with incorrect datatypes ==========
+
+Trying to update the item with invalid datatypes in the base table.
+Error: ValidationException
+Message: The update expression attempted to update the secondary index key to unsupported type
+
+=========== END Trying to update item with incorrect datatypes ===========
+
+
+========== BEGIN Trying to delete item with incorrect datatype ==========
+
+Trying to delete one of the items with invalid datatypes
+...done
+
+=========== END Trying to delete item with incorrect datatype ===========
+
+
+========== BEGIN Try to fix incorrect datatype ==========
+
+Trying to set GSI1PK to string value
+...done
+
+=========== END Try to fix incorrect datatype ===========
+
+Deleting table...
