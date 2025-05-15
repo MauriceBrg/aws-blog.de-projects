@@ -32,4 +32,4 @@ variable "credential-grace-period-in-minutes" {
 1. Run `terraform init`
 1. Run `terraform plan` - you should see around 12 resources that it wants to create
 1. Run `terraform apply` and confirm with yes
-1. Log in to the AWS console, navigate to the newly created secret and trigger a secret rotation.
+1. Log in to the AWS console, navigate to the newly created secret and retrieve the created secret value.
